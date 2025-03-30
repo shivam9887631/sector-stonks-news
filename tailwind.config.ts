@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,12 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Finance-specific colors
+				"sector-tech": "#3b82f6", // Blue
+				"sector-finance": "#10b981", // Green
+				"sector-healthcare": "#8b5cf6", // Purple
+				"sector-energy": "#f59e0b", // Yellow/Orange
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
