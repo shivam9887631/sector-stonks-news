@@ -1,12 +1,12 @@
-
 import React, { useState, useEffect } from 'react';
 import { Container } from "@/components/ui/container";
 import { fetchAllCompanies, Company } from '@/services/apiService';
 import Navbar from '@/components/Navbar';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Star, StarOff, ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
+import { Star, StarOff, ArrowUpIcon, ArrowDownIcon, RefreshCcw, Clock } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { useStockDataContext } from '@/components/StockDataProvider';
 
 const Watchlist = () => {
   // In a real app, we'd store this in a database or localStorage
@@ -15,29 +15,8 @@ const Watchlist = () => {
     return saved ? JSON.parse(saved) : [];
   });
   
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { companies, loading, lastUpdated, refreshData } = useStockDataContext();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const companiesData = await fetchAllCompanies();
-        setCompanies(companiesData);
-      } catch (error) {
-        console.error('Error fetching companies:', error);
-        toast({
-          title: "Error",
-          description: "Failed to fetch company data. Please try again later.",
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [toast]);
 
   // Save watchlist to localStorage whenever it changes
   useEffect(() => {
@@ -62,13 +41,40 @@ const Watchlist = () => {
   // Filter companies to only show watchlisted ones
   const watchlistedCompanies = companies.filter(company => watchlist.includes(company.id));
   
+  const formatLastUpdated = () => {
+    if (!lastUpdated) return 'Not updated yet';
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: true
+    }).format(lastUpdated);
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       
       <main className="py-8">
         <Container>
-          <h1 className="text-3xl font-bold mb-8">Your Watchlist</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold">Your Watchlist</h1>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500 flex items-center">
+                <Clock className="h-4 w-4 mr-1" />
+                Last updated: {formatLastUpdated()}
+              </span>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => refreshData()}
+                className="flex items-center gap-1"
+              >
+                <RefreshCcw className="h-4 w-4" />
+                Refresh
+              </Button>
+            </div>
+          </div>
           
           {loading ? (
             <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>

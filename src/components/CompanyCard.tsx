@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpIcon, ArrowDownIcon } from 'lucide-react';
+import { ArrowUpIcon, ArrowDownIcon, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CompanyCardProps {
@@ -13,11 +13,22 @@ interface CompanyCardProps {
     change: number;
     changePercent: number;
     color: string;
+    lastUpdated?: Date;
   };
 }
 
 const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
   const isPositive = company.change >= 0;
+  
+  const formatLastUpdated = () => {
+    if (!company.lastUpdated) return null;
+    
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true
+    }).format(company.lastUpdated);
+  };
   
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -36,7 +47,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-2">
           <span className="text-xl font-semibold">${company.price.toFixed(2)}</span>
           <div className={`flex items-center ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
             {isPositive ? 
@@ -47,6 +58,13 @@ const CompanyCard: React.FC<CompanyCardProps> = ({ company }) => {
             <span className="ml-1">({company.changePercent.toFixed(2)}%)</span>
           </div>
         </div>
+        
+        {company.lastUpdated && (
+          <div className="flex items-center text-xs text-gray-500">
+            <Clock className="h-3 w-3 mr-1" />
+            <span>Updated at {formatLastUpdated()}</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
