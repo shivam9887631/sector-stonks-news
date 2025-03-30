@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
+import SearchDialog from './SearchDialog';
 
 const Navbar: React.FC = () => {
+  const [searchOpen, setSearchOpen] = useState(false);
+  
   return (
     <nav className="bg-white border-b border-gray-200 py-4">
       <div className="container mx-auto flex items-center justify-between">
@@ -18,9 +21,12 @@ const Navbar: React.FC = () => {
             <Input 
               type="search"
               placeholder="Search sectors or companies..." 
-              className="pl-8"
+              className="pl-8 cursor-pointer"
+              onClick={() => setSearchOpen(true)}
+              readOnly
             />
           </div>
+          <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
         </div>
         
         <div className="flex space-x-4">
